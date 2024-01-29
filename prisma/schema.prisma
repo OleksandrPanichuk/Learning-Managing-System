@@ -4,17 +4,18 @@ generator client {
 }
 
 datasource db {
-  provider     = "postgresql"
+  provider     = "mongodb"
   url          = env("DATABASE_URL")
+  // directUrl =  env("DIRECT_URL")
   relationMode = "prisma"
 }
 
 model Course {
-  id          String  @id @default(uuid())
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
   userId      String
-  title       String  @db.Text
-  description String? @db.Text
-  imageUrl    String? @db.Text
+  title       String  @db.String
+  description String? @db.String
+  imageUrl    String? @db.String
   price       Float?
   isPublished Boolean @default(false)
 
@@ -32,17 +33,17 @@ model Course {
 }
 
 model Category {
-  id      String   @id @default(uuid())
+  id      String   @id @default(auto()) @map("_id") @db.ObjectId
   name    String   @unique
   courses Course[]
 }
 
 model Attachment {
-  id   String @id @default(uuid())
+  id   String @id @default(auto()) @map("_id") @db.ObjectId
   name String
-  url  String @db.Text
+  url  String @db.String
 
-  courseId String
+  courseId String @db.ObjectId
   course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
@@ -52,17 +53,17 @@ model Attachment {
 }
 
 model Chapter {
-  id          String  @id @default(uuid())
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
   title       String
-  description String? @db.Text
-  videoUrl    String? @db.Text
+  description String? @db.String
+  videoUrl    String? @db.String
   position    Int
   isPublished Boolean @default(false)
   isFree      Boolean @default(false)
 
   muxData MuxData?
 
-  courseId String
+  courseId String @db.ObjectId
   course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   userProgress UserProgress[]
@@ -74,19 +75,19 @@ model Chapter {
 }
 
 model MuxData {
-  id         String  @id @default(uuid())
+  id         String  @id @default(auto()) @map("_id") @db.ObjectId
   assetId    String
   playbackId String?
 
-  chapterId String  @unique
+  chapterId String  @unique @db.ObjectId
   chapter   Chapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
 }
 
 model UserProgress {
-  id     String @id @default(uuid())
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
   userId String
 
-  chapterId String
+  chapterId String  @db.ObjectId
   chapter   Chapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
 
   isCompleted Boolean @default(false)
@@ -99,10 +100,10 @@ model UserProgress {
 }
 
 model Purchase {
-  id     String @id @default(uuid())
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
   userId String
 
-  courseId String
+  courseId String @db.ObjectId
   course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
@@ -113,7 +114,7 @@ model Purchase {
 }
 
 model StripeCustomer {
-  id               String @id @default(uuid())
+  id               String @id @default(auto()) @map("_id") @db.ObjectId
   userId           String @unique
   stripeCustomerId String @unique
 
