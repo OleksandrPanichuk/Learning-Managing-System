@@ -19,7 +19,7 @@ model Course {
   price       Float?
   isPublished Boolean @default(false)
 
-  categoryId String?
+  categoryId String?   @db.ObjectId
   category   Category? @relation(fields: [categoryId], references: [id])
 
   chapters    Chapter[]
